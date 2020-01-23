@@ -188,6 +188,7 @@ Alive and running
 * `searx.pwoss.org <https://searx.pwoss.org>`__ - Issuer: Let's Encrypt `Verification <https://www.ssllabs.com/ssltest/analyze.html?d=searx.pwoss.org>`__
 * `searx.ro <https://searx.ro/>`__ - Issuer: Let's Encrypt `Verification <https://www.ssllabs.com/ssltest/analyze.html?d=searx.ro>`__
 * `searx.ru <https://searx.ru/>`__ - Issuer: Let's Encrypt `Verification <https://www.ssllabs.com/ssltest/analyze.html?d=searx.ru>`__
+* `searx.slenk.com <https://searx.slenk.com/>`__ - Issuer: Let's Encrypt `Verification <https://www.ssllabs.com/ssltest/analyze.html?d=searx.slenk.com>`__
 * `searx.solusar.de <https://searx.solusar.de/>`__ - Issuer: Let's Encrypt `Verification <https://www.ssllabs.com/ssltest/analyze.html?d=searx.solusar.de>`__
 * `searx.targaryen.house <https://searx.targaryen.house/>`__ - Issuer: Let's Encrypt `Verification <https://www.ssllabs.com/ssltest/analyze.html?d=searx.targaryen.house>`__
 * `searx.tuxcloud.net <https://searx.tuxcloud.net>`__ - Issuer: Let's Encrypt `Verification <https://www.ssllabs.com/ssltest/analyze.html?d=searx.tuxcloud.net>`__
