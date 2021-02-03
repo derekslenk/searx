@@ -1,24 +1,23 @@
-#!/usr/bin/env python
-
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
  BASE (Scholar publications)
-
- @website     https://base-search.net
- @provide-api yes with authorization (https://api.base-search.net/)
-
- @using-api   yes
- @results     XML
- @stable      ?
- @parse       url, title, publishedDate, content
- More info on api: http://base-search.net/about/download/base_interface.pdf
 """
 
+from urllib.parse import urlencode
 from lxml import etree
 from datetime import datetime
 import re
-from searx.url_utils import urlencode
 from searx.utils import searx_useragent
 
+# about
+about = {
+    "website": 'https://base-search.net',
+    "wikidata_id": 'Q448335',
+    "official_api_documentation": 'https://api.base-search.net/',
+    "use_official_api": True,
+    "require_api_key": False,
+    "results": 'XML',
+}
 
 categories = ['science']
 
@@ -55,7 +54,7 @@ shorcut_dict = {
 def request(query, params):
     # replace shortcuts with API advanced search keywords
     for key in shorcut_dict.keys():
-        query = re.sub(key, shorcut_dict[key], str(query))
+        query = re.sub(key, shorcut_dict[key], query)
 
     # basic search
     offset = (params['pageno'] - 1) * number_of_results
@@ -80,10 +79,7 @@ def response(resp):
 
         date = datetime.now()  # needed in case no dcdate is available for an item
         for item in entry:
-            if item.attrib["name"] == "dchdate":
-                harvestDate = item.text
-
-            elif item.attrib["name"] == "dcdate":
+            if item.attrib["name"] == "dcdate":
                 date = item.text
 
             elif item.attrib["name"] == "dctitle":

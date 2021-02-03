@@ -1,25 +1,25 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
  Yahoo (Web)
-
- @website     https://search.yahoo.com/web
- @provide-api yes (https://developer.yahoo.com/boss/search/),
-              $0.80/1000 queries
-
- @using-api   no (because pricing)
- @results     HTML (using search portal)
- @stable      no (HTML can change)
- @parse       url, title, content, suggestion
 """
 
+from urllib.parse import unquote, urlencode
 from lxml import html
-from searx.engines.xpath import extract_text, extract_url
-from searx.url_utils import unquote, urlencode
-from searx.utils import match_language, eval_xpath
+from searx.utils import extract_text, extract_url, match_language, eval_xpath
+
+# about
+about = {
+    "website": 'https://search.yahoo.com/',
+    "wikidata_id": None,
+    "official_api_documentation": 'https://developer.yahoo.com/api/',
+    "use_official_api": False,
+    "require_api_key": False,
+    "results": 'HTML',
+}
 
 # engine dependent config
 categories = ['general']
 paging = True
-language_support = True
 time_range_support = True
 
 # search-url
@@ -33,7 +33,7 @@ supported_languages_url = 'https://search.yahoo.com/web/advanced'
 results_xpath = "//div[contains(concat(' ', normalize-space(@class), ' '), ' Sr ')]"
 url_xpath = './/h3/a/@href'
 title_xpath = './/h3/a'
-content_xpath = './/div[@class="compText aAbs"]'
+content_xpath = './/div[contains(@class, "compText")]'
 suggestion_xpath = "//div[contains(concat(' ', normalize-space(@class), ' '), ' AlsoTry ')]//a"
 
 time_range_dict = {'day': ['1d', 'd'],

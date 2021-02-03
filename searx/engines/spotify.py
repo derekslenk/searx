@@ -1,19 +1,22 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
  Spotify (Music)
-
- @website     https://spotify.com
- @provide-api yes (https://developer.spotify.com/web-api/search-item/)
-
- @using-api   yes
- @results     JSON
- @stable      yes
- @parse       url, title, content, embedded
 """
 
 from json import loads
-from searx.url_utils import urlencode
+from urllib.parse import urlencode
 import requests
 import base64
+
+# about
+about = {
+    "website": 'https://www.spotify.com',
+    "wikidata_id": 'Q689141',
+    "official_api_documentation": 'https://developer.spotify.com/web-api/search-item/',
+    "use_official_api": True,
+    "require_api_key": False,
+    "results": 'JSON',
+}
 
 # engine dependent config
 categories = ['music']
@@ -39,8 +42,8 @@ def request(query, params):
         'https://accounts.spotify.com/api/token',
         data={'grant_type': 'client_credentials'},
         headers={'Authorization': 'Basic ' + base64.b64encode(
-            "{}:{}".format(api_client_id, api_client_secret).encode('utf-8')
-        ).decode('utf-8')}
+            "{}:{}".format(api_client_id, api_client_secret).encode()
+        ).decode()}
     )
     j = loads(r.text)
     params['headers'] = {'Authorization': 'Bearer {}'.format(j.get('access_token'))}
@@ -59,7 +62,7 @@ def response(resp):
         if result['type'] == 'track':
             title = result['name']
             url = result['external_urls']['spotify']
-            content = u'{} - {} - {}'.format(
+            content = '{} - {} - {}'.format(
                 result['artists'][0]['name'],
                 result['album']['name'],
                 result['name'])

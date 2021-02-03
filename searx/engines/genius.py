@@ -1,23 +1,25 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
-Genius
-
- @website     https://www.genius.com/
- @provide-api yes (https://docs.genius.com/)
-
- @using-api   yes
- @results     JSON
- @stable      yes
- @parse       url, title, content, thumbnail, publishedDate
+ Genius
 """
 
 from json import loads
-from searx.url_utils import urlencode
+from urllib.parse import urlencode
 from datetime import datetime
+
+# about
+about = {
+    "website": 'https://genius.com/',
+    "wikidata_id": 'Q3419343',
+    "official_api_documentation": 'https://docs.genius.com/',
+    "use_official_api": True,
+    "require_api_key": False,
+    "results": 'JSON',
+}
 
 # engine dependent config
 categories = ['music']
 paging = True
-language_support = False
 page_size = 5
 
 url = 'https://genius.com/api/'
@@ -36,7 +38,7 @@ def parse_lyric(hit):
     try:
         content = hit['highlights'][0]['value']
     except:
-        content = None
+        content = ''
     timestamp = hit['result']['lyrics_updated_at']
     result = {'url': hit['result']['url'],
               'title': hit['result']['full_title'],
@@ -51,7 +53,7 @@ def parse_lyric(hit):
 def parse_artist(hit):
     result = {'url': hit['result']['url'],
               'title': hit['result']['name'],
-              'content': None,
+              'content': '',
               'thumbnail': hit['result']['image_url'],
               'template': 'videos.html'}
     return result
@@ -61,6 +63,7 @@ def parse_album(hit):
     result = {'url': hit['result']['url'],
               'title': hit['result']['full_title'],
               'thumbnail': hit['result']['cover_art_url'],
+              'content': '',
               # 'thumbnail': hit['result']['cover_art_thumbnail_url'],
               'template': 'videos.html'}
     try:
@@ -72,6 +75,7 @@ def parse_album(hit):
             result.update({'content': 'Released: {}'.format(year)})
     return result
 
+
 parse = {'lyric': parse_lyric, 'song': parse_lyric, 'artist': parse_artist, 'album': parse_album}
 
 
@@ -80,9 +84,7 @@ def response(resp):
     json = loads(resp.text)
     hits = [hit for section in json['response']['sections'] for hit in section['hits']]
     for hit in hits:
-        try:
-            func = parse[hit['type']]
-        except KeyError:
-            continue
-        results.append(func(hit))
+        func = parse.get(hit['type'])
+        if func:
+            results.append(func(hit))
     return results

@@ -1,28 +1,31 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
  Bing (Videos)
-
- @website     https://www.bing.com/videos
- @provide-api yes (http://datamarket.azure.com/dataset/bing/search)
-
- @using-api   no
- @results     HTML
- @stable      no
- @parse       url, title, content, thumbnail
 """
 
 from json import loads
 from lxml import html
-from searx.engines.bing_images import _fetch_supported_languages, supported_languages_url
-from searx.url_utils import urlencode
+from urllib.parse import urlencode
 from searx.utils import match_language
 
+from searx.engines.bing import language_aliases
+from searx.engines.bing import _fetch_supported_languages, supported_languages_url  # NOQA # pylint: disable=unused-import
+
+# about
+about = {
+    "website": 'https://www.bing.com/videos',
+    "wikidata_id": 'Q4914152',
+    "official_api_documentation": 'https://www.microsoft.com/en-us/bing/apis/bing-video-search-api',
+    "use_official_api": False,
+    "require_api_key": False,
+    "results": 'HTML',
+}
 
 categories = ['videos']
 paging = True
 safesearch = True
 time_range_support = True
 number_of_results = 28
-language_support = True
 
 base_url = 'https://www.bing.com/'
 search_string = 'videos/search'\
@@ -66,6 +69,10 @@ def request(query, params):
     # time range
     if params['time_range'] in time_range_dict:
         params['url'] += time_range_string.format(interval=time_range_dict[params['time_range']])
+
+    # bing videos did not like "older" versions < 70.0.1 when selectin other
+    # languages then 'en' .. very strange ?!?!
+    params['headers']['User-Agent'] = 'Mozilla/5.0 (X11; Linux x86_64; rv:73.0.1) Gecko/20100101 Firefox/73.0.1'
 
     return params
 

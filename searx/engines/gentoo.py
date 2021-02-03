@@ -1,23 +1,24 @@
-# -*- coding: utf-8 -*-
-
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
  Gentoo Wiki
-
- @website      https://wiki.gentoo.org
- @provide-api  yes
- @using-api    no
- @results      HTML
- @stable       no (HTML can change)
- @parse        url, title
 """
 
+from urllib.parse import urlencode, urljoin
 from lxml import html
-from searx.engines.xpath import extract_text
-from searx.url_utils import urlencode, urljoin
+from searx.utils import extract_text
+
+# about
+about = {
+    "website": 'https://wiki.gentoo.org/',
+    "wikidata_id": 'Q1050637',
+    "official_api_documentation": 'https://wiki.gentoo.org/api.php',
+    "use_official_api": False,
+    "require_api_key": False,
+    "results": 'HTML',
+}
 
 # engine dependent config
 categories = ['it']
-language_support = True
 paging = True
 base_url = 'https://wiki.gentoo.org'
 
@@ -90,7 +91,7 @@ def request(query, params):
     # if our language is hosted on the main site, we need to add its name
     # to the query in order to narrow the results to that language
     if language in main_langs:
-        query += b' (' + (main_langs[language]).encode('utf-8') + b')'
+        query += ' (' + main_langs[language] + ')'
 
     # prepare the request parameters
     query = urlencode({'search': query})

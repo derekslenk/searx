@@ -1,21 +1,26 @@
-# Youtube (Videos)
-#
-# @website     https://www.youtube.com/
-# @provide-api yes (https://developers.google.com/apis-explorer/#p/youtube/v3/youtube.search.list)
-#
-# @using-api   yes
-# @results     JSON
-# @stable      yes
-# @parse       url, title, content, publishedDate, thumbnail, embedded
+# SPDX-License-Identifier: AGPL-3.0-or-later
+"""
+ Youtube (Videos)
+"""
 
 from json import loads
 from dateutil import parser
-from searx.url_utils import urlencode
+from urllib.parse import urlencode
+from searx.exceptions import SearxEngineAPIException
+
+# about
+about = {
+    "website": 'https://www.youtube.com/',
+    "wikidata_id": 'Q866',
+    "official_api_documentation": 'https://developers.google.com/youtube/v3/docs/search/list?apix=true',
+    "use_official_api": True,
+    "require_api_key": False,
+    "results": 'JSON',
+}
 
 # engine dependent config
 categories = ['videos', 'music']
 paging = False
-language_support = True
 api_key = None
 
 # search-url
@@ -46,6 +51,9 @@ def response(resp):
     results = []
 
     search_results = loads(resp.text)
+
+    if 'error' in search_results and 'message' in search_results['error']:
+        raise SearxEngineAPIException(search_results['error']['message'])
 
     # return empty array if there are no results
     if 'items' not in search_results:

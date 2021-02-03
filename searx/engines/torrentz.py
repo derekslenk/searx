@@ -1,30 +1,31 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
- Torrentz2.eu (BitTorrent meta-search engine)
-
- @website      https://torrentz2.eu/
- @provide-api  no
-
- @using-api    no
- @results      HTML
- @stable       no (HTML can change, although unlikely,
-                   see https://torrentz.eu/torrentz.btsearch)
- @parse        url, title, publishedDate, seed, leech, filesize, magnetlink
+ Torrentz2.is (BitTorrent meta-search engine)
 """
 
 import re
+from urllib.parse import urlencode
 from lxml import html
 from datetime import datetime
-from searx.engines.xpath import extract_text
-from searx.url_utils import urlencode
-from searx.utils import get_torrent_size
+from searx.utils import extract_text, get_torrent_size
+
+# about
+about = {
+    "website": 'https://torrentz2.is/',
+    "wikidata_id": 'Q1156687',
+    "official_api_documentation": 'https://torrentz.is/torrentz.btsearch',
+    "use_official_api": False,
+    "require_api_key": False,
+    "results": 'HTML',
+}
 
 # engine dependent config
 categories = ['files', 'videos', 'music']
 paging = True
 
 # search-url
-# https://torrentz2.eu/search?f=EXAMPLE&p=6
-base_url = 'https://torrentz2.eu/'
+# https://torrentz2.is/search?f=EXAMPLE&p=6
+base_url = 'https://torrentz2.is/'
 search_url = base_url + 'search?{query}'
 
 

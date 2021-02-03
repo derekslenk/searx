@@ -1,31 +1,29 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
  Bing (Web)
-
- @website     https://www.bing.com
- @provide-api yes (http://datamarket.azure.com/dataset/bing/search),
-              max. 5000 query/month
-
- @using-api   no (because of query limit)
- @results     HTML (using search portal)
- @stable      no (HTML can change)
- @parse       url, title, content
-
- @todo        publishedDate
 """
 
 import re
+from urllib.parse import urlencode
 from lxml import html
-from searx import logger, utils
-from searx.engines.xpath import extract_text
-from searx.url_utils import urlencode
-from searx.utils import match_language, gen_useragent, eval_xpath
+from searx import logger
+from searx.utils import eval_xpath, extract_text, match_language
 
 logger = logger.getChild('bing engine')
+
+# about
+about = {
+    "website": 'https://www.bing.com',
+    "wikidata_id": 'Q182496',
+    "official_api_documentation": 'https://www.microsoft.com/en-us/bing/apis/bing-web-search-api',
+    "use_official_api": False,
+    "require_api_key": False,
+    "results": 'HTML',
+}
 
 # engine dependent config
 categories = ['general']
 paging = True
-language_support = True
 supported_languages_url = 'https://www.bing.com/account/general'
 language_aliases = {'zh-CN': 'zh-CHS', 'zh-TW': 'zh-CHT', 'zh-HK': 'zh-CHT'}
 
@@ -47,7 +45,7 @@ def request(query, params):
     else:
         lang = match_language(params['language'], supported_languages, language_aliases)
 
-    query = u'language:{} {}'.format(lang.split('-')[0].upper(), query.decode('utf-8')).encode('utf-8')
+    query = 'language:{} {}'.format(lang.split('-')[0].upper(), query)
 
     search_path = search_string.format(
         query=urlencode({'q': query}),
@@ -99,7 +97,6 @@ def response(resp):
             result_len = int(result_len_container)
     except Exception as e:
         logger.debug('result error :\n%s', e)
-        pass
 
     if result_len and _get_offset_from_pageno(resp.search_params.get("pageno", 0)) > result_len:
         return []
@@ -110,13 +107,18 @@ def response(resp):
 
 # get supported languages from their site
 def _fetch_supported_languages(resp):
-    supported_languages = []
-    dom = html.fromstring(resp.text)
-    options = eval_xpath(dom, '//div[@id="limit-languages"]//input')
-    for option in options:
-        code = eval_xpath(option, './@id')[0].replace('_', '-')
-        if code == 'nb':
-            code = 'no'
-        supported_languages.append(code)
+    lang_tags = set()
 
-    return supported_languages
+    setmkt = re.compile('setmkt=([^&]*)')
+    dom = html.fromstring(resp.text)
+    lang_links = eval_xpath(dom, "//li/a[contains(@href, 'setmkt')]")
+
+    for a in lang_links:
+        href = eval_xpath(a, './@href')[0]
+        match = setmkt.search(href)
+        l_tag = match.groups()[0]
+        _lang, _nation = l_tag.split('-', 1)
+        l_tag = _lang.lower() + '-' + _nation.upper()
+        lang_tags.add(l_tag)
+
+    return list(lang_tags)

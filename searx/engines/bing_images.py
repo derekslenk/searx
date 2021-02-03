@@ -1,29 +1,31 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
  Bing (Images)
-
- @website     https://www.bing.com/images
- @provide-api yes (http://datamarket.azure.com/dataset/bing/search),
-              max. 5000 query/month
-
- @using-api   no (because of query limit)
- @results     HTML (using search portal)
- @stable      no (HTML can change)
- @parse       url, title, img_src
-
 """
 
+from urllib.parse import urlencode
 from lxml import html
 from json import loads
-import re
-from searx.url_utils import urlencode
 from searx.utils import match_language
+
+from searx.engines.bing import language_aliases
+from searx.engines.bing import _fetch_supported_languages, supported_languages_url  # NOQA # pylint: disable=unused-import
+
+# about
+about = {
+    "website": 'https://www.bing.com/images',
+    "wikidata_id": 'Q182496',
+    "official_api_documentation": 'https://www.microsoft.com/en-us/bing/apis/bing-image-search-api',
+    "use_official_api": False,
+    "require_api_key": False,
+    "results": 'HTML',
+}
 
 # engine dependent config
 categories = ['images']
 paging = True
 safesearch = True
 time_range_support = True
-language_support = True
 supported_languages_url = 'https://www.bing.com/account/general'
 number_of_results = 28
 
@@ -78,19 +80,18 @@ def response(resp):
 
     # parse results
     for result in dom.xpath('//div[@class="imgpt"]'):
-
-        img_format = result.xpath('./div[contains(@class, "img_info")]/span/text()')[0]
-        # Microsoft seems to experiment with this code so don't make the path too specific,
-        # just catch the text section for the first anchor in img_info assuming this to be
-        # the originating site.
-        source = result.xpath('./div[contains(@class, "img_info")]//a/text()')[0]
-
         try:
+            img_format = result.xpath('./div[contains(@class, "img_info")]/span/text()')[0]
+            # Microsoft seems to experiment with this code so don't make the path too specific,
+            # just catch the text section for the first anchor in img_info assuming this to be
+            # the originating site.
+            source = result.xpath('./div[contains(@class, "img_info")]//a/text()')[0]
+
             m = loads(result.xpath('./a/@m')[0])
 
             # strip 'Unicode private use area' highlighting, they render to Tux
             # the Linux penguin and a standing diamond on my machine...
-            title = m.get('t', '').replace(u'\ue000', '').replace(u'\ue001', '')
+            title = m.get('t', '').replace('\ue000', '').replace('\ue001', '')
             results.append({'template': 'images.html',
                             'url': m['purl'],
                             'thumbnail_src': m['turl'],
@@ -103,22 +104,3 @@ def response(resp):
             continue
 
     return results
-
-
-# get supported languages from their site
-def _fetch_supported_languages(resp):
-    supported_languages = []
-    dom = html.fromstring(resp.text)
-
-    regions_xpath = '//div[@id="region-section-content"]' \
-                    + '//ul[@class="b_vList"]/li/a/@href'
-
-    regions = dom.xpath(regions_xpath)
-    for region in regions:
-        code = re.search('setmkt=[^\&]+', region).group()[7:]
-        if code == 'nb-NO':
-            code = 'no-NO'
-
-        supported_languages.append(code)
-
-    return supported_languages

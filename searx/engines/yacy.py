@@ -1,28 +1,32 @@
-# Yacy (Web, Images, Videos, Music, Files)
-#
-# @website     http://yacy.net
-# @provide-api yes
-#              (http://www.yacy-websuche.de/wiki/index.php/Dev:APIyacysearch)
-#
-# @using-api   yes
-# @results     JSON
-# @stable      yes
-# @parse       (general)    url, title, content, publishedDate
-# @parse       (images)     url, title, img_src
-#
-# @todo        parse video, audio and file results
+# SPDX-License-Identifier: AGPL-3.0-or-later
+"""
+ Yacy (Web, Images, Videos, Music, Files)
+"""
 
 from json import loads
 from dateutil import parser
-from searx.url_utils import urlencode
+from urllib.parse import urlencode
+
+from requests.auth import HTTPDigestAuth
 
 from searx.utils import html_to_text
+
+# about
+about = {
+    "website": 'https://yacy.net/',
+    "wikidata_id": 'Q1759675',
+    "official_api_documentation": 'https://wiki.yacy.net/index.php/Dev:API',
+    "use_official_api": True,
+    "require_api_key": False,
+    "results": 'JSON',
+}
 
 # engine dependent config
 categories = ['general', 'images']  # TODO , 'music', 'videos', 'files'
 paging = True
-language_support = True
 number_of_results = 5
+http_digest_auth_user = ""
+http_digest_auth_pass = ""
 
 # search-url
 base_url = 'http://localhost:8090'
@@ -51,6 +55,9 @@ def request(query, params):
                           limit=number_of_results,
                           search_type=search_type)
 
+    if http_digest_auth_user and http_digest_auth_pass:
+        params['auth'] = HTTPDigestAuth(http_digest_auth_user, http_digest_auth_pass)
+
     # add language tag if specified
     if params['language'] != 'all':
         params['url'] += '&lr=lang_' + params['language'].split('-')[0]
@@ -75,7 +82,7 @@ def response(resp):
 
     for result in search_results[0].get('items', []):
         # parse image results
-        if result.get('image'):
+        if resp.search_params.get('category') == 'images':
 
             result_url = ''
             if 'url' in result:
@@ -104,5 +111,4 @@ def response(resp):
 
         # TODO parse video, audio and file results
 
-    # return results
     return results

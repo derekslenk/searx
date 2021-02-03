@@ -22,6 +22,13 @@ $(document).ready(function(){
     $('#q.autofocus').focus();
 
     /**
+     * Empty search bar when click on reset button
+     */
+    $("#clear_search").click(function () {
+	document.getElementById("q").value = "";
+    });
+
+    /**
      * select full content on click if class="select-all-on-click"
      */
     $(".select-all-on-click").click(function () {
@@ -95,5 +102,10 @@ $(document).ready(function(){
             $(".btn-sm").removeClass('active');
             $(".btn-sm").addClass('btn-default');
         }
+    });
+    $(".nav-tabs").click(function(a) {
+        var tabs = $(a.target).parents("ul");
+        tabs.children().attr("aria-selected", "false");
+        $(a.target).parent().attr("aria-selected", "true");
     });
 });

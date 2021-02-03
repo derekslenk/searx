@@ -1,23 +1,21 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
  DigBT (Videos, Music, Files)
-
- @website     https://digbt.org
- @provide-api no
-
- @using-api   no
- @results     HTML (using search portal)
- @stable      no (HTML can change)
- @parse       url, title, content, magnetlink
 """
 
-from sys import version_info
+from urllib.parse import urljoin
 from lxml import html
-from searx.engines.xpath import extract_text
-from searx.utils import get_torrent_size
-from searx.url_utils import urljoin
+from searx.utils import extract_text, get_torrent_size
 
-if version_info[0] == 3:
-    unicode = str
+# about
+about = {
+    "website": 'https://digbt.org',
+    "wikidata_id": None,
+    "official_api_documentation": None,
+    "use_official_api": False,
+    "require_api_key": False,
+    "results": 'HTML',
+}
 
 categories = ['videos', 'music', 'files']
 paging = True

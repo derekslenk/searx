@@ -1,17 +1,20 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
  ScanR Structures (Science)
-
- @website     https://scanr.enseignementsup-recherche.gouv.fr
- @provide-api yes (https://scanr.enseignementsup-recherche.gouv.fr/api/swagger-ui.html)
-
- @using-api   yes
- @results     JSON
- @stable      yes
- @parse       url, title, content, img_src
 """
 
 from json import loads, dumps
 from searx.utils import html_to_text
+
+# about
+about = {
+    "website": 'https://scanr.enseignementsup-recherche.gouv.fr',
+    "wikidata_id": 'Q44105684',
+    "official_api_documentation": 'https://scanr.enseignementsup-recherche.gouv.fr/opendata',
+    "use_official_api": True,
+    "require_api_key": False,
+    "results": 'JSON',
+}
 
 # engine dependent config
 categories = ['science']
@@ -29,7 +32,7 @@ def request(query, params):
     params['url'] = search_url
     params['method'] = 'POST'
     params['headers']['Content-type'] = "application/json"
-    params['data'] = dumps({"query": query.decode('utf-8'),
+    params['data'] = dumps({"query": query,
                             "searchField": "ALL",
                             "sortDirection": "ASC",
                             "sortOrder": "RELEVANCY",

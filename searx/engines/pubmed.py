@@ -1,22 +1,26 @@
-#!/usr/bin/env python
-
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
  PubMed (Scholar publications)
- @website     https://www.ncbi.nlm.nih.gov/pubmed/
- @provide-api yes (https://www.ncbi.nlm.nih.gov/home/develop/api/)
- @using-api   yes
- @results     XML
- @stable      yes
- @parse       url, title, publishedDate, content
- More info on api: https://www.ncbi.nlm.nih.gov/books/NBK25501/
 """
 
 from flask_babel import gettext
 from lxml import etree
 from datetime import datetime
-from searx.url_utils import urlencode
+from urllib.parse import urlencode
 from searx.poolrequests import get
 
+# about
+about = {
+    "website": 'https://www.ncbi.nlm.nih.gov/pubmed/',
+    "wikidata_id": 'Q1540899',
+    "official_api_documentation": {
+        'url': 'https://www.ncbi.nlm.nih.gov/home/develop/api/',
+        'comment': 'More info on api: https://www.ncbi.nlm.nih.gov/books/NBK25501/'
+    },
+    "use_official_api": True,
+    "require_api_key": False,
+    "results": 'XML',
+}
 
 categories = ['science']
 
@@ -81,7 +85,7 @@ def response(resp):
             pass
 
         if len(content) > 300:
-                    content = content[0:300] + "..."
+            content = content[0:300] + "..."
         # TODO: center snippet on query term
 
         res_dict = {'url': url,

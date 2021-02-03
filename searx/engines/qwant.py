@@ -1,31 +1,33 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
  Qwant (Web, Images, News, Social)
-
- @website     https://qwant.com/
- @provide-api not officially (https://api.qwant.com/api/search/)
-
- @using-api   yes
- @results     JSON
- @stable      yes
- @parse       url, title, content
 """
 
 from datetime import datetime
 from json import loads
-from searx.utils import html_to_text
-from searx.url_utils import urlencode
-from searx.utils import match_language
+from urllib.parse import urlencode
+from searx.utils import html_to_text, match_language
+from searx.exceptions import SearxEngineAPIException, SearxEngineCaptchaException
+from searx.raise_for_httperror import raise_for_httperror
+
+# about
+about = {
+    "website": 'https://www.qwant.com/',
+    "wikidata_id": 'Q14657870',
+    "official_api_documentation": None,
+    "use_official_api": True,
+    "require_api_key": False,
+    "results": 'JSON',
+}
 
 # engine dependent config
-categories = None
+categories = []
 paging = True
-language_support = True
 supported_languages_url = 'https://qwant.com/region'
 
 category_to_keyword = {'general': 'web',
                        'images': 'images',
-                       'news': 'news',
-                       'social media': 'social'}
+                       'news': 'news'}
 
 # search-url
 url = 'https://api.qwant.com/api/search/{keyword}?count=10&offset={offset}&f=&{query}&t={keyword}&uiv=4'
@@ -51,6 +53,7 @@ def request(query, params):
         params['url'] += '&locale=' + language.replace('-', '_').lower()
 
     params['headers']['User-Agent'] = 'Mozilla/5.0 (X11; Linux x86_64; rv:69.0) Gecko/20100101 Firefox/69.0'
+    params['raise_for_httperror'] = False
     return params
 
 
@@ -58,7 +61,19 @@ def request(query, params):
 def response(resp):
     results = []
 
+    # According to https://www.qwant.com/js/app.js
+    if resp.status_code == 429:
+        raise SearxEngineCaptchaException()
+
+    # raise for other errors
+    raise_for_httperror(resp)
+
+    # load JSON result
     search_results = loads(resp.text)
+
+    # check for an API error
+    if search_results.get('status') != 'success':
+        raise SearxEngineAPIException('API error ' + str(search_results.get('error', '')))
 
     # return empty array if there are no results
     if 'data' not in search_results:
@@ -90,15 +105,6 @@ def response(resp):
                             'thumbnail_src': thumbnail_src,
                             'img_src': img_src})
 
-        elif category_to_keyword.get(categories[0], '') == 'social':
-            published_date = datetime.fromtimestamp(result['date'], None)
-            img_src = result.get('img', None)
-            results.append({'url': res_url,
-                            'title': title,
-                            'publishedDate': published_date,
-                            'content': content,
-                            'img_src': img_src})
-
         elif category_to_keyword.get(categories[0], '') == 'news':
             published_date = datetime.fromtimestamp(result['date'], None)
             media = result.get('media', [])
@@ -124,11 +130,10 @@ def _fetch_supported_languages(resp):
 
     regions_json = loads(response_text)
 
-    supported_languages = []
+    supported_languages = {}
     for lang in regions_json['languages'].values():
-        if lang['code'] == 'nb':
-            lang['code'] = 'no'
         for country in lang['countries']:
-            supported_languages.append(lang['code'] + '-' + country)
+            lang_code = "{lang}-{country}".format(lang=lang['code'], country=country)
+            supported_languages[lang_code] = {'name': lang['name']}
 
     return supported_languages

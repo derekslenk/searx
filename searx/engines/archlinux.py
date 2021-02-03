@@ -1,23 +1,26 @@
-# -*- coding: utf-8 -*-
-
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
  Arch Linux Wiki
 
- @website      https://wiki.archlinux.org
- @provide-api  no (Mediawiki provides API, but Arch Wiki blocks access to it
- @using-api    no
- @results      HTML
- @stable       no (HTML can change)
- @parse        url, title
+ API: Mediawiki provides API, but Arch Wiki blocks access to it
 """
 
+from urllib.parse import urlencode, urljoin
 from lxml import html
-from searx.engines.xpath import extract_text
-from searx.url_utils import urlencode, urljoin
+from searx.utils import extract_text, eval_xpath_list, eval_xpath_getindex
+
+# about
+about = {
+    "website": 'https://wiki.archlinux.org/',
+    "wikidata_id": 'Q101445877',
+    "official_api_documentation": None,
+    "use_official_api": False,
+    "require_api_key": False,
+    "results": 'HTML',
+}
 
 # engine dependent config
 categories = ['it']
-language_support = True
 paging = True
 base_url = 'https://wiki.archlinux.org'
 
@@ -105,7 +108,7 @@ def request(query, params):
     # if our language is hosted on the main site, we need to add its name
     # to the query in order to narrow the results to that language
     if language in main_langs:
-        query += b' (' + main_langs[language] + b')'
+        query += ' (' + main_langs[language] + ')'
 
     # prepare the request parameters
     query = urlencode({'search': query})
@@ -131,8 +134,8 @@ def response(resp):
     dom = html.fromstring(resp.text)
 
     # parse results
-    for result in dom.xpath(xpath_results):
-        link = result.xpath(xpath_link)[0]
+    for result in eval_xpath_list(dom, xpath_results):
+        link = eval_xpath_getindex(result, xpath_link, 0)
         href = urljoin(base_url, link.attrib.get('href'))
         title = extract_text(link)
 

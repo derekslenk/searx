@@ -78,13 +78,25 @@ if(searx.autocompleter) {
 }
 
 $(document).ready(function(){
+    var original_search_value = '';
     if(searx.autocompleter) {
+		$("#q").on('keydown', function(e) {
+			if(e.which == 13) {
+                original_search_value = $('#q').val();
+			}
+		});
         $('#q').typeahead(null, {
             name: 'search-results',
             displayKey: function(result) {
                 return result;
             },
             source: searx.searchResults.ttAdapter()
+        });
+        $('#q').bind('typeahead:selected', function(ev, suggestion) {
+            if(original_search_value) {
+                $('#q').val(original_search_value);
+            }
+            $("#search_form").submit();
         });
     }
 });
@@ -110,6 +122,13 @@ $(document).ready(function(){
      * focus element if class="autofocus" and id="q"
      */
     $('#q.autofocus').focus();
+
+    /**
+     * Empty search bar when click on reset button
+     */
+    $("#clear_search").click(function () {
+	document.getElementById("q").value = "";
+    });
 
     /**
      * select full content on click if class="select-all-on-click"
@@ -184,6 +203,22 @@ $(document).ready(function(){
             $(".btn-sm").removeClass(btnClass);
             $(".btn-sm").removeClass('active');
             $(".btn-sm").addClass('btn-default');
+        }
+    });
+    $(".nav-tabs").click(function(a) {
+        var tabs = $(a.target).parents("ul");
+        tabs.children().attr("aria-selected", "false");
+        $(a.target).parent().attr("aria-selected", "true");
+    });
+});
+;window.addEventListener('load', function() {
+    // Hide infobox toggle if shrunk size already fits all content.
+    $('.infobox').each(function() {
+        var infobox_body = $(this).find('.infobox_body');
+        var total_height = infobox_body.prop('scrollHeight') + infobox_body.find('img.infobox_part').height();
+        var max_height = infobox_body.css('max-height').replace('px', '');
+        if (total_height <= max_height) {
+            $(this).find('.infobox_toggle').hide();
         }
     });
 });
@@ -279,7 +314,7 @@ $(document).ready(function(){
                     }
                 })
                 .fail(function() {
-                    $(result_table_loadicon).html($(result_table_loadicon).html() + "<p class=\"text-muted\">could not load data!</p>");
+                    $(result_table_loadicon).html($(result_table_loadicon).html() + "<p class=\"text-muted\">"+could_not_load+"</p>");
                 });
             }
         }
@@ -354,3 +389,13 @@ $(document).ready(function(){
         $( this ).off( event );
     });
 });
+;$(document).ready(function(){
+    $("#allow-all-engines").click(function() {
+        $(".onoffswitch-checkbox").each(function() { this.checked = false;});
+    });
+
+    $("#disable-all-engines").click(function() {
+        $(".onoffswitch-checkbox").each(function() { this.checked = true;});
+    });
+});
+

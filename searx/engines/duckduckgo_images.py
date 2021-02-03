@@ -1,31 +1,31 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
  DuckDuckGo (Images)
-
- @website     https://duckduckgo.com/
- @provide-api yes (https://duckduckgo.com/api),
-              but images are not supported
-
- @using-api   no
- @results     JSON (site requires js to get images)
- @stable      no (JSON can change)
- @parse       url, title, img_src
-
- @todo        avoid extra request
 """
 
 from json import loads
-from searx.engines.xpath import extract_text
-from searx.engines.duckduckgo import (
-    _fetch_supported_languages, supported_languages_url,
-    get_region_code, language_aliases
-)
+from urllib.parse import urlencode
+from searx.exceptions import SearxEngineAPIException
+from searx.engines.duckduckgo import get_region_code
+from searx.engines.duckduckgo import _fetch_supported_languages, supported_languages_url  # NOQA # pylint: disable=unused-import
 from searx.poolrequests import get
-from searx.url_utils import urlencode
+
+# about
+about = {
+    "website": 'https://duckduckgo.com/',
+    "wikidata_id": 'Q12805',
+    "official_api_documentation": {
+        'url': 'https://duckduckgo.com/api',
+        'comment': 'but images are not supported',
+    },
+    "use_official_api": False,
+    "require_api_key": False,
+    "results": 'JSON (site requires js to get images)',
+}
 
 # engine dependent config
 categories = ['images']
 paging = True
-language_support = True
 safesearch = True
 
 # search-url
@@ -40,7 +40,7 @@ def get_vqd(query, headers):
     res = get(query_url, headers=headers)
     content = res.text
     if content.find('vqd=\'') == -1:
-        raise Exception('Request failed')
+        raise SearxEngineAPIException('Request failed')
     vqd = content[content.find('vqd=\'') + 5:]
     vqd = vqd[:vqd.find('\'')]
     return vqd
@@ -74,10 +74,7 @@ def response(resp):
     results = []
 
     content = resp.text
-    try:
-        res_json = loads(content)
-    except:
-        raise Exception('Cannot parse results')
+    res_json = loads(content)
 
     # parse results
     for result in res_json['results']:

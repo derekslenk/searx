@@ -1,21 +1,23 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
  Tokyo Toshokan (A BitTorrent Library for Japanese Media)
-
- @website      https://www.tokyotosho.info/
- @provide-api  no
- @using-api    no
- @results      HTML
- @stable       no (HTML can change)
- @parse        url, title, publishedDate, seed, leech,
-               filesize, magnetlink, content
 """
 
 import re
+from urllib.parse import urlencode
 from lxml import html
-from searx.engines.xpath import extract_text
 from datetime import datetime
-from searx.url_utils import urlencode
-from searx.utils import get_torrent_size, int_or_zero
+from searx.utils import extract_text, get_torrent_size, int_or_zero
+
+# about
+about = {
+    "website": 'https://www.tokyotosho.info/',
+    "wikidata_id": None,
+    "official_api_documentation": None,
+    "use_official_api": False,
+    "require_api_key": False,
+    "results": 'HTML',
+}
 
 # engine dependent config
 categories = ['files', 'videos', 'music']

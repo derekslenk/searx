@@ -1,20 +1,22 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
  Kickass Torrent (Videos, Music, Files)
-
- @website     https://kickass.so
- @provide-api no (nothing found)
-
- @using-api   no
- @results     HTML (using search portal)
- @stable      yes (HTML can change)
- @parse       url, title, content, seed, leech, magnetlink
 """
 
 from lxml import html
 from operator import itemgetter
-from searx.engines.xpath import extract_text
-from searx.utils import get_torrent_size, convert_str_to_int
-from searx.url_utils import quote, urljoin
+from urllib.parse import quote, urljoin
+from searx.utils import extract_text, get_torrent_size, convert_str_to_int
+
+# about
+about = {
+    "website": 'https://kickass.so',
+    "wikidata_id": 'Q17062285',
+    "official_api_documentation": None,
+    "use_official_api": False,
+    "require_api_key": False,
+    "results": 'HTML',
+}
 
 # engine dependent config
 categories = ['videos', 'music', 'files']
