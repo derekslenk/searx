@@ -220,13 +220,13 @@ terminal open for the tasks below.</p>
 <li><p><a class="reference internal" href="settings.html#settings-global"><span class="std std-ref">Global Settings</span></a></p></li>
 <li><p><a class="reference internal" href="settings.html#settings-location"><span class="std std-ref">settings.yml location</span></a></p></li>
 <li><p><a class="reference internal" href="settings.html#settings-use-default-settings"><span class="std std-ref">use_default_settings</span></a></p></li>
-<li><p><a class="reference external" href="https://github.com/searx/searx/blob/master/utils/templates/etc/searx/use_default_settings.yml">/etc/searx/settings.yml</a></p></li>
+<li><p><a class="reference external" href="https://github.com/derekslenk/searx/blob/master/utils/templates/etc/searx/use_default_settings.yml">/etc/searx/settings.yml</a></p></li>
 </ul>
 </div>
 <p>To create a initial <code class="docutils literal notranslate"><span class="pre">/etc/searx/settings.yml</span></code> you can start with a copy of the
-file <a class="reference external" href="https://github.com/searx/searx/blob/master/utils/templates/etc/searx/use_default_settings.yml">git://utils/templates/etc/searx/use_default_settings.yml</a>.  This setup
+file <a class="reference external" href="https://github.com/derekslenk/searx/blob/master/utils/templates/etc/searx/use_default_settings.yml">git://utils/templates/etc/searx/use_default_settings.yml</a>.  This setup
 <a class="reference internal" href="settings.html#settings-use-default-settings"><span class="std std-ref">use default settings</span></a> from
-<a class="reference external" href="https://github.com/searx/searx/blob/master/searx/settings.yml">git://searx/settings.yml</a> and is recommended since <a class="reference external" href="https://github.com/searx/searx/pull/2291">PR 2291</a> is merged.</p>
+<a class="reference external" href="https://github.com/derekslenk/searx/blob/master/searx/settings.yml">git://searx/settings.yml</a> and is recommended since <a class="reference external" href="https://github.com/searx/searx/pull/2291">PR 2291</a> is merged.</p>
 <p>For a <em>minimal setup</em>, configure like shown below – replace <code class="docutils literal notranslate"><span class="pre">searx&#64;$(uname</span>
 <span class="pre">-n)</span></code> with a name of your choice, set <code class="docutils literal notranslate"><span class="pre">ultrasecretkey</span></code> – <em>and/or</em> edit
 <code class="docutils literal notranslate"><span class="pre">/etc/searx/settings.yml</span></code> to your needs.</p>
@@ -319,7 +319,7 @@ $ sudo -H sed -i -e <span class="s2">&quot;s/{instance_name}/searx@</span><span 
     <span class="l l-Scalar l-Scalar-Plain">contact_url</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">False</span> <span class="c1"># mailto:contact@example.com</span>
 
 <span class="l l-Scalar l-Scalar-Plain">brand</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">git_url</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">https://github.com/searx/searx</span>
+    <span class="l l-Scalar l-Scalar-Plain">git_url</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">https://github.com/derekslenk/searx</span>
     <span class="l l-Scalar l-Scalar-Plain">git_branch</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">master</span>
     <span class="l l-Scalar l-Scalar-Plain">issue_url</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">https://github.com/searx/searx/issues</span>
     <span class="l l-Scalar l-Scalar-Plain">docs_url</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">https://searx.github.io/searx</span>
@@ -338,7 +338,7 @@ $ sudo -H sed -i -e <span class="s2">&quot;s/{instance_name}/searx@</span><span 
     <span class="l l-Scalar l-Scalar-Plain">port</span> <span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">8888</span>
     <span class="l l-Scalar l-Scalar-Plain">bind_address</span> <span class="p p-Indicator">:</span> <span class="s">&quot;127.0.0.1&quot;</span> <span class="c1"># address to listen on</span>
     <span class="l l-Scalar l-Scalar-Plain">secret_key</span> <span class="p p-Indicator">:</span> <span class="s">&quot;ultrasecretkey&quot;</span> <span class="c1"># change this!</span>
-    <span class="l l-Scalar l-Scalar-Plain">base_url</span> <span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">False</span> <span class="c1"># Set custom base_url. Possible values: False or &quot;https://your.custom.host/location/&quot;</span>
+    <span class="l l-Scalar l-Scalar-Plain">base_url</span> <span class="p p-Indicator">:</span> <span class="s">&quot;https://searx.slenk.com/&quot;</span> <span class="c1"># Set custom base_url. Possible values: False or &quot;https://your.custom.host/location/&quot;</span>
     <span class="l l-Scalar l-Scalar-Plain">image_proxy</span> <span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">False</span> <span class="c1"># Proxying image results through searx</span>
     <span class="l l-Scalar l-Scalar-Plain">http_protocol_version</span> <span class="p p-Indicator">:</span> <span class="s">&quot;1.0&quot;</span>  <span class="c1"># 1.0 and 1.1 are supported</span>
     <span class="l l-Scalar l-Scalar-Plain">method</span><span class="p p-Indicator">:</span> <span class="s">&quot;POST&quot;</span> <span class="c1"># POST queries are more secure as they don&#39;t show up in history but may cause problems when using Firefox containers</span>
@@ -377,9 +377,9 @@ $ sudo -H sed -i -e <span class="s2">&quot;s/{instance_name}/searx@</span><span 
 <span class="c1"># uncomment below section if you have running morty proxy</span>
 <span class="c1"># the key is base64 encoded (keep the !!binary notation)</span>
 <span class="c1"># Note: since commit af77ec3, morty accepts a base64 encoded key.</span>
-<span class="c1">#result_proxy:</span>
-<span class="c1">#    url : http://127.0.0.1:3000/</span>
-<span class="c1">#    key : !!binary &quot;your_morty_proxy_key&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">result_proxy</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">url</span> <span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">https://searx.slenk.com/morty</span>
+    <span class="l l-Scalar l-Scalar-Plain">key</span> <span class="p p-Indicator">:</span> <span class="kt">!!binary</span> <span class="s">&quot;2fb512aa86488cb8140cdb51afd9e4f1878e2d96cca58ad0e01c63a36dff4aa4&quot;</span>
 
 <span class="l l-Scalar l-Scalar-Plain">outgoing</span><span class="p p-Indicator">:</span> <span class="c1"># communication with search engines</span>
     <span class="l l-Scalar l-Scalar-Plain">request_timeout</span> <span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">2.0</span> <span class="c1"># default timeout in seconds, can be override by engine</span>
@@ -1838,7 +1838,7 @@ command twice).  At this point searx is not demonized; uwsgi allows this.</p>
 
   <h3>Project Links</h3>
   <ul>
-    <li><a href="https://github.com/searx/searx">Source</a>
+    <li><a href="https://github.com/derekslenk/searx">Source</a>
   
     <li><a href="https://github.com/searx/searx/wiki">Wiki</a>
   
